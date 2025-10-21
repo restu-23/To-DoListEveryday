@@ -1,140 +1,79 @@
-<!-- 🌸 Bagian CSS: Desain bernuansa pink -->
-  <style>
-    /* Reset dasar dan gaya umum */
-    * {
-      box-sizing: border-box;
-      font-family: "Poppins", sans-serif;
-    }
+body {
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #ffb6c1, #ffc0cb, #ffe4e1);
+  min-height: 100vh;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 50px;
+}
 
-    body {
-      background: #ffe6f2; /* warna pink lembut */
-      color: #4a4a4a;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      min-height: 100vh;
-      margin: 0;
-      padding: 20px;
-    }
- h1 {
-      color: #e75480; /* warna pink tua */
-      margin-bottom: 10px;
-    }
+.container {
+  background: white;
+  width: 90%;
+  max-width: 500px;
+  padding: 25px;
+  border-radius: 20px;
+  box-shadow: 0 4px 15px rgba(255, 105, 180, 0.3);
+  text-align: center;
+}
 
-    /* Kontainer utama */
-    .container {
-      background: white;
-      border-radius: 20px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-      width: 100%;
-      max-width: 400px;
-      padding: 20px;
-    }
+h1 {
+  color: #e75480;
+  margin-bottom: 20px;
+}
 
-    /* Input dan dropdown */
-    input, select {
-      width: 100%;
-      padding: 10px;
-      margin: 5px 0;
-      border: 2px solid #f8b4d9;
-      border-radius: 10px;
-      outline: none;
-      font-size: 14px;
-    }
-/* Efek saat input difokuskan */
-    input:focus, select:focus {
-      border-color: #e75480;
-    }
+.input-area {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
 
-    /* Tombol tambah tugas */
-    button {
-      width: 100%;
-      background: #ff80bf; /* warna pink cerah */
-      border: none;
-      color: white;
-      padding: 10px;
-      border-radius: 10px;
-      cursor: pointer;
-      font-weight: bold;
-      transition: 0.3s;
-      margin-top: 10px;
-    }
+input[type="text"], input[type="datetime-local"] {
+  padding: 10px;
+  border: 2px solid #ffc0cb;
+  border-radius: 10px;
+  font-size: 14px;
+  outline: none;
+}
 
- /* Efek hover pada tombol */
-    button:hover {
-      background: #e75480;
-    }
+button {
+  background: #ff69b4;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.3s;
+}
 
-    /* Daftar tugas (list) */
-    ul {
-      list-style: none;
-      padding: 0;
-      margin-top: 15px;
-    }
+button:hover {
+  background: #ff85b4;
+}
 
-    /* Setiap item tugas */
-    li {
-      background: #ffe0ef; /* pink muda */
-      padding: 10px;
-      border-radius: 10px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-    }
+ul {
+  list-style: none;
+  padding: 0;
+  margin-top: 20px;
+}
 
-  /* Tugas yang sudah selesai */
-    li.done {
-      text-decoration: line-through;
-      opacity: 0.6;
-    }
+li {
+  background: #ffe4e1;
+  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 
-    /* Tombol hapus */
-    .delete-btn {
-      background: #ff4d88;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      padding: 5px 8px;
-      cursor: pointer;
-      font-size: 12px;
-    }
+li.completed {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
 
- /* Footer */
-    .footer {
-      margin-top: 15px;
-      font-size: 13px;
-      color: #888;
-      text-align: center;
-    }
-  </style>
-</head>
-
-<body>
-  <!-- 🌸 Judul utama -->
-  <h1>DailyTask 💖</h1>
-<!-- 🌸 Kontainer utama -->
-  <div class="container">
-    <!-- Input tugas -->
-    <input type="text" id="taskInput" placeholder="Tulis tugasmu di sini..." />
-
-    <!-- Pilih waktu / deadline -->
-    <input type="datetime-local" id="taskTime" />
-
-    <!-- Pilih kategori -->
-    <select id="taskCategory">
-      <option value="Umum">Umum</option>
-      <option value="Sekolah">Sekolah</option>
-      <option value="Kerja">Kerja</option>
-      <option value="Pribadi">Pribadi</option>
-    </select>
-
-    <!-- Tombol untuk menambah tugas -->
-    <button onclick="addTask()">➕ Tambah Tugas</button>
-  <!-- Daftar semua tugas -->
-    <ul id="taskList"></ul>
-  </div>
-
-  <!-- 🌸 Footer -->
-  <div class="footer">Tetap produktif hari ini 💪</div>
+.deadline {
+  font-size: 12px;
+  color: #c71585;
+}
