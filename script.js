@@ -1,140 +1,89 @@
- <!-- 🌸 Bagian JavaScript -->
-  <script>
-    // -------------------------------
-    // 💾 Inisialisasi Data
-    // -------------------------------
-    // Ambil data tugas dari localStorage (kalau ada)
-    let taskList = JSON.parse(localStorage.getItem("tasks")) || [];
+// Meminta izin notifikasi
+if ("Notification" in window && Notification.permission !== "granted") {
+  Notification.requestPermission();
+}
 
-    // Ambil elemen <ul> tempat daftar tugas akan ditampilkan
-    const listElement = document.getElementById("taskList");
+const taskInput = document.getElementById("taskInput");
+const deadlineInput = document.getElementById("deadlineInput");
+const addBtn = document.getElementById("addBtn");
+const taskList = document.getElementById("taskList");
 
-    // Saat halaman dimuat, tampilkan daftar tugas & minta izin notifikasi
-    window.onload = () => {
+let tasks = [];
+
+addBtn.addEventListener("click", () => {
+  const taskText = taskInput.value.trim();
+  const deadline = deadlineInput.value;
+
+  if (taskText === "" || deadline === "") {
+    alert("Harap isi tugas dan waktu deadline!");
+    return;
+  }
+
+  const task = {
+    text: taskText,
+    deadline: new Date(deadline),
+    completed: false
+  };
+
+  tasks.push(task);
+  renderTasks();
+  scheduleNotification(task);
+
+  taskInput.value = "";
+  deadlineInput.value = "";
+});
+
+function renderTasks() {
+  taskList.innerHTML = "";
+  tasks.forEach((task, index) => {
+    const li = document.createElement("li");
+    li.classList.toggle("completed", task.completed);
+
+    const text = document.createElement("span");
+    text.textContent = task.text;
+
+    const time = document.createElement("span");
+    time.classList.add("deadline");
+    time.textContent = `⏰ ${task.deadline.toLocaleString()}`;
+
+    const completeBtn = document.createElement("button");
+    completeBtn.textContent = "✔";
+    completeBtn.onclick = () => {
+      task.completed = !task.completed;
       renderTasks();
-      requestNotificationPermission();
     };
 
- // -------------------------------
-    // ✏ Fungsi Menambah Tugas
-    // -------------------------------
-    function addTask() {
-      const taskInput = document.getElementById("taskInput");
-      const taskTime = document.getElementById("taskTime");
-      const taskCategory = document.getElementById("taskCategory");
-
-      // Cek apakah input kosong
-      if (!taskInput.value.trim()) {
-        alert("Tulis dulu tugasnya ya 💕");
-        return;
-      }
-
-      // Buat objek tugas baru
-      const task = {
-        text: taskInput.value,  // isi tugas
-        time: taskTime.value,   // waktu
-        category: taskCategory.value, // kategori
-        done: false,            // status selesai
-      };
-  // Tambahkan ke daftar tugas
-      taskList.push(task);
-
-      // Simpan ke localStorage
-      saveTasks();
-
-      // Tampilkan ulang daftar
+    const deleteBtn = document.createElement("button");
+    deleteBtn.textContent = "❌";
+    deleteBtn.onclick = () => {
+      tasks.splice(index, 1);
       renderTasks();
+    };
 
-      // Jika ada waktu, jadwalkan notifikasi
-      if (task.time) scheduleNotification(task);
+    li.appendChild(text);
+    li.appendChild(time);
+    li.appendChild(completeBtn);
+    li.appendChild(deleteBtn);
+    taskList.appendChild(li);
+  });
+}
 
-      // Kosongkan input
-      taskInput.value = "";
-      taskTime.value = "";
-    }
+// Fungsi untuk menjadwalkan notifikasi 30 menit sebelum deadline
+function scheduleNotification(task) {
+  const now = new Date();
+  const thirtyMinutes = 30 * 60 * 1000; // 30 menit dalam ms
+  const notifyTime = new Date(task.deadline - thirtyMinutes);
 
- // -------------------------------
-    // ✅ Fungsi Menandai Selesai / Belum
-    // -------------------------------
-    function toggleDone(index) {
-      taskList[index].done = !taskList[index].done;
-      saveTasks();
-      renderTasks();
-    }
+  const timeout = notifyTime - now;
 
-    // -------------------------------
-    // ❌ Fungsi Menghapus Tugas
-    // -------------------------------
-    function deleteTask(index) {
-      taskList.splice(index, 1); // hapus 1 item dari array
-      saveTasks();
-      renderTasks();
-    }
-  // -------------------------------
-    // 💾 Fungsi Menyimpan ke localStorage
-    // -------------------------------
-    function saveTasks() {
-      localStorage.setItem("tasks", JSON.stringify(taskList));
-    }
-
-    // -------------------------------
-    // 📋 Fungsi Menampilkan Daftar Tugas
-    // -------------------------------
-    function renderTasks() {
-      listElement.innerHTML = ""; // bersihkan dulu list-nya
-
-      // Loop setiap tugas dan tampilkan
-      taskList.forEach((task, index) => {
-        const li = document.createElement("li");
-        li.className = task.done ? "done" : "";
-  // Gunakan innerHTML agar teks + tombol tampil
-        li.innerHTML = `
-          <span onclick="toggleDone(${index})">
-            ${task.text} <br>
-            <small>🕒 ${task.time ? formatTime(task.time) : "Tanpa waktu"} | 📂 ${task.category}</small>
-          </span>
-          <button class="delete-btn" onclick="deleteTask(${index})">Hapus</button>
-        `;
-        listElement.appendChild(li);
-      });
-    }
- // -------------------------------
-    // 🕒 Format Waktu agar lebih enak dibaca
-    // -------------------------------
-    function formatTime(timeStr) {
-      const d = new Date(timeStr);
-      return ${d.getDate()}/${d.getMonth()+1} ${d.getHours()}:${String(d.getMinutes()).padStart(2, "0")};
-    }
-
-    // -------------------------------
-    // 🔔 Fungsi Notifikasi
-    // -------------------------------
-    // Minta izin untuk menampilkan notifikasi
-    function requestNotificationPermission() {
-      if ("Notification" in window) {
-        Notification.requestPermission();
+  if (timeout > 0) {
+    setTimeout(() => {
+      if (Notification.permission === "granted" && !task.completed) {
+        new Notification("⏰ Pengingat To-Do List", {
+          body: `Tugas "${task.text}" akan berakhir dalam 30 menit!`,
+          icon: "https://cdn-icons-png.flaticon.com/512/1029/1029132.png"
+        });
       }
-    }
-
- // Jadwalkan notifikasi 5 menit sebelum waktu tugas
-    function scheduleNotification(task) {
-      const now = new Date();
-      const taskTime = new Date(task.time);
-
-      // Hitung selisih waktu (dalam milidetik)
-      const diff = taskTime - now - 5 * 60 * 1000;
-
-      // Jika tugas masih di masa depan
-      if (diff > 0) {
-        setTimeout(() => {
-          if (Notification.permission === "granted") {
-            new Notification("Pengingat Tugas 💖", {
-              body: Sudah hampir waktunya: ${task.text},
-            });
-          }
-        }, diff);
-      }
-    }
-  </script>
-</body>
-</html>
+    }, timeout);
+  }
+}
